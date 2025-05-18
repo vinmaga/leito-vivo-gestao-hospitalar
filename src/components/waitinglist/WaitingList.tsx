@@ -167,7 +167,7 @@ const WaitingList = () => {
             <SelectValue placeholder="All Departments" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Departments</SelectItem>
+            <SelectItem value="all">All Departments</SelectItem>
             <SelectItem value="ICU">ICU</SelectItem>
             <SelectItem value="Surgery">Surgery</SelectItem>
             <SelectItem value="Pediatrics">Pediatrics</SelectItem>
@@ -181,7 +181,7 @@ const WaitingList = () => {
             <SelectValue placeholder="All Priorities" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Priorities</SelectItem>
+            <SelectItem value="all">All Priorities</SelectItem>
             <SelectItem value="emergency">Emergency</SelectItem>
             <SelectItem value="urgent">Urgent</SelectItem>
             <SelectItem value="normal">Normal</SelectItem>
