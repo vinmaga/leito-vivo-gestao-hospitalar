@@ -65,7 +65,7 @@ export function AppSidebar() {
   const isMobile = useIsMobile();
 
   return (
-    <Sidebar defaultCollapsed={isMobile}>
+    <Sidebar collapsed={isMobile}>
       <SidebarContent>
         <div className="flex items-center justify-center py-4">
           <Hospital className="h-8 w-8 text-primary" />
@@ -76,8 +76,8 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild active={item.active}>
-                    <a href={item.url} className="flex items-center">
+                  <SidebarMenuButton asChild>
+                    <a href={item.url} className={`flex items-center ${item.active ? 'font-semibold text-primary' : ''}`}>
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </a>

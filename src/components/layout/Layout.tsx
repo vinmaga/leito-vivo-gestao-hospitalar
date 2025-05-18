@@ -21,9 +21,9 @@ const Layout = ({ children }: LayoutProps) => {
             {children}
           </main>
         </div>
-        <Toaster />
-        <Sonner />
       </div>
+      <Toaster />
+      <Sonner />
     </SidebarProvider>
   );
 };

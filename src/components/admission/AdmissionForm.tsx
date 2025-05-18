@@ -154,9 +154,9 @@ const AdmissionForm = () => {
                     selected={dischargeDate}
                     onSelect={setDischargeDate}
                     initialFocus
-                    disabled={(date) => 
-                      (this.date && date < this.date) || 
-                      date < new Date()
+                    disabled={(currentDate) => 
+                      (date && currentDate < date) || 
+                      currentDate < new Date()
                     }
                   />
                 </PopoverContent>
