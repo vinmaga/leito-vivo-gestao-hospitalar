@@ -20,17 +20,6 @@ import { AlertTriangle, ArrowUp, ArrowDown, Search, User } from "lucide-react";
 import { getWaitingList, updateWaitingList, WaitingPatient } from "@/services/waitingListService";
 import { useNavigate } from "react-router-dom";
 
-interface WaitingPatient {
-  id: string;
-  name: string;
-  age: number;
-  department: string;
-  priority: "normal" | "urgent" | "emergency";
-  waitingSince: string;
-  timeWaiting: string;
-  diagnosis: string;
-}
-
 const getPriorityBadge = (priority: string) => {
   switch (priority) {
     case "emergency":
