@@ -1,5 +1,6 @@
 
 import { Bed, Calendar, Check, Clock, FileText, Hospital, Search, User, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -11,13 +12,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLocation } from 'react-router-dom';
 
 const navItems = [
   {
     title: "Dashboard",
     icon: Hospital,
     url: "/",
-    active: true,
   },
   {
     title: "Bed Map",
@@ -63,7 +64,8 @@ const navItems = [
 
 export function AppSidebar() {
   const isMobile = useIsMobile();
-
+  const location = useLocation();
+  
   return (
     <Sidebar>
       <SidebarContent>
@@ -77,10 +79,13 @@ export function AppSidebar() {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className={`flex items-center ${item.active ? 'font-semibold text-primary' : ''}`}>
+                    <Link 
+                      to={item.url} 
+                      className={`flex items-center ${location.pathname === item.url ? 'font-semibold text-primary' : ''}`}
+                    >
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
