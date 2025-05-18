@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -18,6 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AlertTriangle, ArrowUp, ArrowDown, Search, User } from "lucide-react";
+import { getWaitingList, updateWaitingList, WaitingPatient } from "@/services/waitingListService";
+import { useNavigate } from "react-router-dom";
 
 interface WaitingPatient {
   id: string;
@@ -29,79 +30,6 @@ interface WaitingPatient {
   timeWaiting: string;
   diagnosis: string;
 }
-
-const waitingPatients: WaitingPatient[] = [
-  {
-    id: "W-1001",
-    name: "Ana Silva",
-    age: 65,
-    department: "ICU",
-    priority: "emergency",
-    waitingSince: "2023-05-18 09:30",
-    timeWaiting: "45 min",
-    diagnosis: "Respiratory failure",
-  },
-  {
-    id: "W-1002",
-    name: "João Oliveira",
-    age: 42,
-    department: "Surgery",
-    priority: "urgent",
-    waitingSince: "2023-05-18 07:45",
-    timeWaiting: "2h 10min",
-    diagnosis: "Appendicitis",
-  },
-  {
-    id: "W-1003",
-    name: "Maria Santos",
-    age: 78,
-    department: "General",
-    priority: "normal",
-    waitingSince: "2023-05-18 06:30",
-    timeWaiting: "3h 25min",
-    diagnosis: "UTI",
-  },
-  {
-    id: "W-1004",
-    name: "Pedro Costa",
-    age: 8,
-    department: "Pediatrics",
-    priority: "normal",
-    waitingSince: "2023-05-18 05:50",
-    timeWaiting: "4h 05min",
-    diagnosis: "Fever, dehydration",
-  },
-  {
-    id: "W-1005",
-    name: "Beatriz Alves",
-    age: 29,
-    department: "Maternity",
-    priority: "urgent",
-    waitingSince: "2023-05-18 08:15",
-    timeWaiting: "1h 40min",
-    diagnosis: "Labor induction",
-  },
-  {
-    id: "W-1006",
-    name: "Lucas Ferreira",
-    age: 55,
-    department: "Surgery",
-    priority: "normal",
-    waitingSince: "2023-05-18 07:00",
-    timeWaiting: "2h 55min",
-    diagnosis: "Hernia repair",
-  },
-  {
-    id: "W-1007",
-    name: "Carla Ribeiro",
-    age: 33,
-    department: "ER",
-    priority: "urgent",
-    waitingSince: "2023-05-18 08:50",
-    timeWaiting: "1h 05min",
-    diagnosis: "Severe abdominal pain",
-  },
-];
 
 const getPriorityBadge = (priority: string) => {
   switch (priority) {
@@ -129,8 +57,48 @@ const getPriorityBadge = (priority: string) => {
 
 const WaitingList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterDepartment, setFilterDepartment] = useState("");
-  const [filterPriority, setFilterPriority] = useState("");
+  const [filterDepartment, setFilterDepartment] = useState("all");
+  const [filterPriority, setFilterPriority] = useState("all");
+  const [waitingPatients, setWaitingPatients] = useState<WaitingPatient[]>([]);
+  const navigate = useNavigate();
+
+  // Load waiting list from service
+  useEffect(() => {
+    const loadWaitingList = () => {
+      const list = getWaitingList();
+      
+      // Update time waiting for each patient
+      const updatedList = list.map(patient => {
+        const admissionTime = new Date(patient.waitingSince.replace(' ', 'T'));
+        const currentTime = new Date();
+        const diffMs = currentTime.getTime() - admissionTime.getTime();
+        
+        const diffMins = Math.floor(diffMs / 60000);
+        const hours = Math.floor(diffMins / 60);
+        const mins = diffMins % 60;
+        
+        const timeWaiting = hours > 0 
+          ? `${hours}h ${mins}min` 
+          : `${mins} min`;
+          
+        return { ...patient, timeWaiting };
+      });
+      
+      setWaitingPatients(updatedList);
+      // Save the updated waiting times
+      updateWaitingList(updatedList);
+    };
+    
+    loadWaitingList();
+    // Update waiting times every minute
+    const interval = setInterval(loadWaitingList, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  const handleAddNewPatient = () => {
+    navigate('/admissions');
+  };
   
   const filteredPatients = waitingPatients.filter(patient => {
     return (
@@ -138,8 +106,8 @@ const WaitingList = () => {
         patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         patient.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         patient.diagnosis.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (filterDepartment === "" || patient.department === filterDepartment) &&
-      (filterPriority === "" || patient.priority === filterPriority)
+      (filterDepartment === "all" || patient.department === filterDepartment) &&
+      (filterPriority === "all" || patient.priority === filterPriority)
     );
   });
 
@@ -148,7 +116,7 @@ const WaitingList = () => {
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
         <h2 className="text-2xl font-bold">Waiting List</h2>
         <div className="flex items-center space-x-2">
-          <Button variant="default">Add New Patient</Button>
+          <Button variant="default" onClick={handleAddNewPatient}>Add New Patient</Button>
         </div>
       </div>
       
