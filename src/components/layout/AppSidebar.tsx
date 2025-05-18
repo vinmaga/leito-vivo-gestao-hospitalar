@@ -65,7 +65,7 @@ export function AppSidebar() {
   const isMobile = useIsMobile();
 
   return (
-    <Sidebar defaultOpen={!isMobile}>
+    <Sidebar>
       <SidebarContent>
         <div className="flex items-center justify-center py-4">
           <Hospital className="h-8 w-8 text-primary" />
