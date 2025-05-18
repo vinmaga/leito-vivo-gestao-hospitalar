@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,23 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Hospital specific status colors
+				available: {
+					DEFAULT: 'hsl(var(--available))',
+					foreground: 'hsl(var(--available-foreground))'
+				},
+				occupied: {
+					DEFAULT: 'hsl(var(--occupied))',
+					foreground: 'hsl(var(--occupied-foreground))'
+				},
+				maintenance: {
+					DEFAULT: 'hsl(var(--maintenance))',
+					foreground: 'hsl(var(--maintenance-foreground))'
+				},
+				emergency: {
+					DEFAULT: 'hsl(var(--emergency))',
+					foreground: 'hsl(var(--emergency-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +102,31 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'pulse-light': {
+					'0%, 100%': {
+						opacity: '1'
+					},
+					'50%': {
+						opacity: '0.7'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'pulse-light': 'pulse-light 2s infinite ease-in-out',
 			}
 		}
 	},
