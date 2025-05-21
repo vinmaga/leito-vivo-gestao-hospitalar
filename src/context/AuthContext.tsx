@@ -30,9 +30,9 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Coordenadas do hospital (exemplo)
-const HOSPITAL_LATITUDE = -23.5505; // São Paulo (exemplo)
-const HOSPITAL_LONGITUDE = -46.6333;
+// Coordenadas do hospital em Florianópolis/SC
+const HOSPITAL_LATITUDE = -27.702067; // Florianópolis/SC
+const HOSPITAL_LONGITUDE = -48.509747;
 const MAX_DISTANCE_METERS = 500; // Distância máxima permitida em metros
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
