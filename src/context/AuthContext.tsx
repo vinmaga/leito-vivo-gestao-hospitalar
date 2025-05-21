@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthState, Professional } from '@/types/professional';
 import { toast } from '@/components/ui/sonner';
@@ -18,6 +17,13 @@ const mockProfessionals: Professional[] = [
     role: 'Enfermeiro',
     email: 'enf.silva@hospital.com',
     password: '123456'
+  },
+  {
+    id: '3',
+    name: 'Usuário Teste',
+    role: 'Teste',
+    email: 'teste@teste.com',
+    password: 'teste@teste.som'
   }
 ];
 
