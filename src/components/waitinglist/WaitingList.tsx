@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +20,7 @@ import {
 import { AlertTriangle, ArrowUp, ArrowDown, Search, User } from "lucide-react";
 import { getWaitingList, updateWaitingList, WaitingPatient } from "@/services/waitingListService";
 import { useNavigate } from "react-router-dom";
+import BedAssignmentDialog from "./BedAssignmentDialog";
 
 const getPriorityBadge = (priority: string) => {
   switch (priority) {
@@ -49,6 +51,8 @@ const WaitingList = () => {
   const [filterDepartment, setFilterDepartment] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
   const [waitingPatients, setWaitingPatients] = useState<WaitingPatient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<WaitingPatient | null>(null);
+  const [isAssignBedDialogOpen, setIsAssignBedDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   // Load waiting list from service
@@ -87,6 +91,11 @@ const WaitingList = () => {
   
   const handleAddNewPatient = () => {
     navigate('/admissions');
+  };
+  
+  const handleAssignBed = (patient: WaitingPatient) => {
+    setSelectedPatient(patient);
+    setIsAssignBedDialogOpen(true);
   };
   
   const filteredPatients = waitingPatients.filter(patient => {
@@ -193,7 +202,11 @@ const WaitingList = () => {
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                       <ArrowDown className="h-4 w-4" />
                     </Button>
-                    <Button variant="default" size="sm">
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => handleAssignBed(patient)}
+                    >
                       Assign Bed
                     </Button>
                   </div>
@@ -215,6 +228,12 @@ const WaitingList = () => {
         <div>Showing {filteredPatients.length} of {waitingPatients.length} patients</div>
         <div>Updated just now</div>
       </div>
+
+      <BedAssignmentDialog
+        patient={selectedPatient}
+        isOpen={isAssignBedDialogOpen}
+        onClose={() => setIsAssignBedDialogOpen(false)}
+      />
     </div>
   );
 };
