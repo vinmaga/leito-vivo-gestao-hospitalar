@@ -161,8 +161,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Login bem-sucedido
+      // Removendo a senha do objeto professional antes de armazenar no estado
       const { password: _, ...professionalWithoutPassword } = professional;
-      const newAuthState = {
+      
+      const newAuthState: AuthState = {
         isAuthenticated: true,
         professional: professionalWithoutPassword,
         loading: false,

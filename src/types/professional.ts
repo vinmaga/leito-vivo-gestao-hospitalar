@@ -4,7 +4,7 @@ export interface Professional {
   name: string;
   role: string;
   email: string;
-  password: string; // Na prática, seria um hash
+  password?: string; // Changed to optional with ?
 }
 
 export type AuthState = {
