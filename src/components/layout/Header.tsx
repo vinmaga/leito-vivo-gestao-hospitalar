@@ -1,9 +1,19 @@
 
-import { Bell, Calendar, Search, Settings } from 'lucide-react';
+import { Bell, Calendar, LogOut, Search, Settings } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const { authState, logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 bg-white border-b">
       <div className="flex items-center gap-2">
@@ -31,7 +41,16 @@ const Header = () => {
         <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5" />
         </Button>
-        <Button variant="outline" className="ml-2">Dr. Santos</Button>
+        {authState.isAuthenticated && (
+          <>
+            <Button variant="outline" className="ml-2">
+              {authState.professional?.name || 'Usuário'}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleLogout} title="Sair">
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </>
+        )}
       </div>
     </header>
   );
