@@ -53,6 +53,7 @@ const WaitingList = () => {
   const [waitingPatients, setWaitingPatients] = useState<WaitingPatient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<WaitingPatient | null>(null);
   const [isAssignBedDialogOpen, setIsAssignBedDialogOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Add refresh trigger
   const navigate = useNavigate();
 
   // Load waiting list from service
@@ -87,7 +88,7 @@ const WaitingList = () => {
     const interval = setInterval(loadWaitingList, 60000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshTrigger]); // Add refreshTrigger to dependencies
   
   const handleAddNewPatient = () => {
     navigate('/admissions');
@@ -96,6 +97,12 @@ const WaitingList = () => {
   const handleAssignBed = (patient: WaitingPatient) => {
     setSelectedPatient(patient);
     setIsAssignBedDialogOpen(true);
+  };
+  
+  const handleDialogClose = () => {
+    setIsAssignBedDialogOpen(false);
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh when dialog closes
+    setSelectedPatient(null);
   };
   
   const filteredPatients = waitingPatients.filter(patient => {
@@ -232,7 +239,7 @@ const WaitingList = () => {
       <BedAssignmentDialog
         patient={selectedPatient}
         isOpen={isAssignBedDialogOpen}
-        onClose={() => setIsAssignBedDialogOpen(false)}
+        onClose={handleDialogClose}
       />
     </div>
   );

@@ -2,48 +2,17 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { WaitingPatient } from "@/services/waitingListService";
+import { WaitingPatient, updateWaitingList, getWaitingList } from "@/services/waitingListService";
 import { AlertTriangle, Clock, Check, X } from "lucide-react";
 import { toast } from "sonner";
-
-interface Bed {
-  id: string;
-  room: string;
-  status: "available" | "occupied" | "maintenance" | "cleaning";
-  department: string;
-}
+import { getDepartmentBeds, updateBedStatus } from "@/services/bedService";
+import { Bed } from "@/components/beds/BedMap";
 
 interface BedAssignmentDialogProps {
   patient: WaitingPatient | null;
   isOpen: boolean;
   onClose: () => void;
 }
-
-// Sample bed data - in a real application, this would come from an API
-const generateBeds = (department: string): Bed[] => {
-  const beds: Bed[] = [];
-  const statuses: Array<"available" | "occupied" | "maintenance" | "cleaning"> = [
-    "available",
-    "occupied",
-    "maintenance",
-    "cleaning",
-  ];
-  
-  // Generate 15 beds for the department
-  for (let i = 1; i <= 15; i++) {
-    // Make 40% of the beds available to ensure there are options
-    const status = i % 3 === 0 || i % 5 === 0 ? "available" : statuses[Math.floor(Math.random() * statuses.length)];
-    
-    beds.push({
-      id: `${department.toLowerCase().replace(/\s/g, "-")}-${i}`,
-      room: `${department.substring(0, 3).toUpperCase()}-${Math.floor((i - 1) / 2) + 1}${i % 2 ? 'A' : 'B'}`,
-      status,
-      department,
-    });
-  }
-  
-  return beds;
-};
 
 const BedStatusIcon = ({ status }: { status: string }) => {
   switch (status) {
@@ -65,8 +34,8 @@ export function BedAssignmentDialog({ patient, isOpen, onClose }: BedAssignmentD
 
   useEffect(() => {
     if (patient && patient.department) {
-      // In a real app, you would fetch available beds from an API
-      const departmentBeds = generateBeds(patient.department);
+      // Get beds for the patient's department from our bed service
+      const departmentBeds = getDepartmentBeds(patient.department);
       setBeds(departmentBeds);
     }
   }, [patient]);
@@ -77,9 +46,28 @@ export function BedAssignmentDialog({ patient, isOpen, onClose }: BedAssignmentD
       return;
     }
 
-    toast.success(`Patient ${patient?.name} assigned to bed ${bed.room}`, {
-      description: "Patient will be moved shortly",
+    if (!patient) return;
+
+    // Create patient info for the bed
+    const patientInfo = {
+      name: patient.name,
+      age: patient.age,
+      diagnosis: patient.diagnosis,
+      admissionDate: new Date().toLocaleDateString('pt-BR'),
+    };
+
+    // Update bed status to occupied
+    updateBedStatus(bed.id, "occupied", patientInfo);
+    
+    // Remove patient from waiting list
+    const currentWaitingList = getWaitingList();
+    const updatedWaitingList = currentWaitingList.filter(p => p.id !== patient.id);
+    updateWaitingList(updatedWaitingList);
+    
+    toast.success(`Patient ${patient.name} assigned to bed ${bed.room}`, {
+      description: "Patient has been moved from waiting list"
     });
+    
     onClose();
   };
 

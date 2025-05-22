@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BedGrid from "./BedGrid";
 import BedDetails from "./BedDetails";
+import { getAllBeds, departments } from "@/services/bedService";
 
 export interface Bed {
   id: string;
@@ -24,70 +25,15 @@ const floors = [
   { id: "floor3", name: "Floor 3" },
 ];
 
-const departments = [
-  { id: "icu", name: "ICU", floor: "floor1" },
-  { id: "surgery", name: "Surgery", floor: "floor1" },
-  { id: "pediatrics", name: "Pediatrics", floor: "floor2" },
-  { id: "general", name: "General", floor: "floor2" },
-  { id: "maternity", name: "Maternity", floor: "floor3" },
-  { id: "er", name: "Emergency Room", floor: "floor3" },
-];
-
-// Sample bed data
-const generateBeds = (): Bed[] => {
-  const statuses: Array<"available" | "occupied" | "maintenance" | "cleaning"> = [
-    "available",
-    "occupied",
-    "maintenance",
-    "cleaning",
-  ];
-  
-  const beds: Bed[] = [];
-  
-  departments.forEach((dept) => {
-    const bedCount = dept.id === "icu" ? 20 : 30;
-    
-    for (let i = 1; i <= bedCount; i++) {
-      const status = statuses[Math.floor(Math.random() * (statuses.length - (dept.id === "icu" ? 0.5 : 0)))];
-      
-      const bed: Bed = {
-        id: `${dept.id}-${i}`,
-        room: `${dept.id.toUpperCase()}-${Math.floor((i - 1) / 2) + 1}${i % 2 ? 'A' : 'B'}`,
-        status,
-        department: dept.name,
-      };
-      
-      if (status === "occupied") {
-        const names = ["João Silva", "Maria Santos", "Pedro Oliveira", "Ana Costa", "Carlos Pereira"];
-        const diagnoses = ["Pneumonia", "Post-surgery recovery", "Heart condition", "Fracture", "COVID-19"];
-        
-        const admissionDate = new Date();
-        admissionDate.setDate(admissionDate.getDate() - Math.floor(Math.random() * 10));
-        
-        const dischargeDate = new Date();
-        dischargeDate.setDate(admissionDate.getDate() + Math.floor(Math.random() * 10) + 3);
-        
-        bed.patientInfo = {
-          name: names[Math.floor(Math.random() * names.length)],
-          age: Math.floor(Math.random() * 70) + 10,
-          diagnosis: diagnoses[Math.floor(Math.random() * diagnoses.length)],
-          admissionDate: admissionDate.toLocaleDateString('pt-BR'),
-          expectedDischarge: dischargeDate.toLocaleDateString('pt-BR'),
-        };
-      }
-      
-      beds.push(bed);
-    }
-  });
-  
-  return beds;
-};
-
-const bedData = generateBeds();
-
 const BedMap = () => {
   const [activeFloor, setActiveFloor] = useState(floors[0].id);
   const [selectedBed, setSelectedBed] = useState<Bed | null>(null);
+  const [beds, setBeds] = useState<Bed[]>([]);
+  
+  // Load beds from service
+  useEffect(() => {
+    setBeds(getAllBeds());
+  }, []);
   
   const handleBedClick = (bed: Bed) => {
     setSelectedBed(bed);
@@ -115,7 +61,7 @@ const BedMap = () => {
             <BedGrid
               key={dept.id}
               title={dept.name}
-              beds={bedData.filter(bed => bed.department === dept.name)}
+              beds={beds.filter(bed => bed.department === dept.name)}
               onBedClick={handleBedClick}
             />
           ))}
