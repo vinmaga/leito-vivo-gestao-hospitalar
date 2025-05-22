@@ -32,11 +32,21 @@ const BedMap = () => {
   
   // Load beds from service
   useEffect(() => {
-    setBeds(getAllBeds());
+    loadBeds();
   }, []);
+  
+  const loadBeds = () => {
+    setBeds(getAllBeds());
+  };
   
   const handleBedClick = (bed: Bed) => {
     setSelectedBed(bed);
+  };
+  
+  const handleDialogClose = () => {
+    // Refresh beds data when dialog closes to ensure we have the latest data
+    loadBeds();
+    setSelectedBed(null);
   };
 
   return (
@@ -68,7 +78,7 @@ const BedMap = () => {
       </div>
 
       {selectedBed && (
-        <BedDetails bed={selectedBed} onClose={() => setSelectedBed(null)} />
+        <BedDetails bed={selectedBed} onClose={handleDialogClose} />
       )}
     </div>
   );
